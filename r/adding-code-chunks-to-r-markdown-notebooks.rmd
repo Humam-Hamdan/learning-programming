@@ -1,0 +1,32 @@
+---
+title: 'Adding code chunks to R Markdown notebooks'
+author: "Humam Hamdan"
+date: "2023-11-03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r ggplot for penguin data}
+library(ggplot2)
+library(palmerpenguins)
+data(penguins)
+View(penguins)
+```
+
+
+
+```{r ggplot for penguin data visualization}
+ggplot(data = penguins) +
+  geom_point(mapping = aes(x = flipper_length_mm, y = body_mass_g))
+```
+
+
+
+
+
+

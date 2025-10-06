@@ -1,0 +1,45 @@
+---
+title: "ggplot hook"
+author: "Humam Hamdan"
+date: "2023-11-03"
+output: html_document
+---
+
+# Setting Enviroment
+Importing Tidyverse and PalmerPenguins
+
+```{r loading package, warning=FALSE}
+library(tidyverse)
+library(palmerpenguins)
+
+```
+
+
+
+```{r}
+penguins %>%
+  drop_na(sex) %>%
+  ggplot(aes(x=flipper_length_mm,y=body_mass_g)) +
+  geom_point(aes(color=species),
+             shape=species) +
+  facet_wrap(~sex)
+glimpse(penguins)
+
+ggplot(data=penguins,aes(x=flipper_length_mm,y=body_mass_g))+
+  geom_point(color="purple")
+
+ggplot(data=penguins,aes(x=flipper_length_mm,y=body_mass_g))+
+  geom_point(aes(shape=species))
+
+ggplot(data=penguins,aes(x=flipper_length_mm,y=body_mass_g))+
+  geom_point(aes(color=species,
+                 shape=species)) +
+  facet_wrap(~sex)
+
+penguins %>%
+  drop_na(sex) %>%
+  ggplot(data=penguins,aes(x=flipper_length_mm,y=body_mass_g))+
+  geom_point(aes(color=species,
+                 shape=species)) +
+  facet_wrap(~sex)
+```
