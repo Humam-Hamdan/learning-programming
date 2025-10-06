@@ -1,0 +1,6 @@
+"0","# need to: sum trip duration by weekday, so 2 aggregations
+tripagg <- aggregate(tripdrop1, by,FUN=mean)
+"
+"2","Error in aggregate.data.frame(tripdrop1, by, FUN = mean) : 
+  'by' must be a list
+"

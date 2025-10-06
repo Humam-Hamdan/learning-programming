@@ -1,0 +1,18 @@
+"0","library(tidyverse)"
+"0","library(Hmisc)"
+"2","Warning: package ‘Hmisc’ was built under R version 4.3.2"
+"2","
+Attaching package: ‘Hmisc’
+
+"
+"2","The following objects are masked from ‘package:dplyr’:
+
+    src, summarize
+
+"
+"2","The following objects are masked from ‘package:base’:
+
+    format.pval, units
+
+"
+"0","tripsq <- read.csv(""Divvy_Trips_2020_Q1.csv"")"

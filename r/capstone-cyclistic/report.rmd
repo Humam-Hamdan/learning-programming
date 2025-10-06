@@ -1,0 +1,210 @@
+---
+title: "Report"
+author: "Humam Hamdan"
+date: "2023-11-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Ask - determine task
+
+This is a report about choosing which marketing strategy has the best probability to convert most of the casual users into annual subscribers.
+
+```{r removing var}
+rm(list=ls())
+```
+
+```{r import library + dataset,echo=FALSE, warning=FALSE}
+library(tidyverse)
+tripsq <- read.csv("Divvy_Trips_2020_Q1.csv")
+```
+
+# Prepare - get data
+
+I used the dataset from the first quarter of year 2020, as it was the most recent data available, the license makes it so that I can complete the analysis without any problems, and the data has no problems in itself as it's internal data from the company.
+
+```{r view the dataset}
+colnames(tripsq)
+view(tripsq)
+```
+
+# Process - clean and fix and filter
+There are two columns that are formatted wrongly.
+
+don't need:
+start_lng ,start_lat, end_lat, end_lng = It's langtitude and altitude.
+rideable_type = all data is docked_bike.
+
+remove na with na.rm=TRUE
+
+```{r removing non wanted columns,echo=FALSE, warning=FALSE}
+# dropping long & alt cols
+tripcld1 <- subset(tripsq, select=-c(start_lat, end_lat, start_lng, end_lng))
+# check
+colnames(tripcld1)
+```
+
+```{r fix start at - end at,echo=FALSE, warning=FALSE}
+#check type: class(tripcld1[3,2]) = character
+start_fix <- as_datetime(tripcld1$started_at)
+end_fix <- as_datetime(tripcld1$ended_at)
+# check type: 
+class(end_fix)
+# adding start_fix as a new col, and dropping the old one
+tripcld2 <- cbind(tripcld1, started_at_fix = start_fix)
+tripcld3 <- cbind(tripcld2, ended_at_fix = end_fix)
+# change validation: 
+class(tripcld3$ended_at_fix)
+# dropping old start-end
+tripcld4 <- subset(tripcld3, select=-c(started_at, ended_at))
+# check with colnames: 
+colnames(tripcld4)
+# check class
+class(tripcld4$started_at_fix)
+class(tripcld4$ended_at_fix)
+```
+
+```{r trip_duration,echo=FALSE, warning=FALSE}
+# adding trip_duartion and defining it
+tripcld5 <- cbind(tripcld4, trip_duration = tripcld4$ended_at_fix - tripcld4$started_at_fix)
+# check names-values-class
+colnames(tripcld5)
+head(tripcld5$trip_duration)
+class(tripcld5$trip_duration)
+```
+
+```{r check for duplicates,echo=FALSE, warning=FALSE}
+length(unique(tripcld5$ride_id)) == nrow(tripcld5)
+# No duplicates
+dim(tripcld5[duplicated(tripcld5$ride_id),])[1]
+# Another to check -from stackoverflow
+```
+
+```{r check for nulls,echo=FALSE, warning=FALSE}
+is.null(tripcld5)
+# No Nulls!
+```
+
+```{r add weekdays,echo=FALSE, warning=FALSE}
+weekday <- weekdays(tripcld5$started_at_fix)
+tripcld6 <- cbind(tripcld5, weekday = weekday)
+# check
+colnames(tripcld6)
+class(tripcld6$weekday)
+view(tripcld6$weekday)
+```
+
+```{r check datatype - final,echo=FALSE, warning=FALSE}
+str(tripcld6)
+# it's fine!
+```
+
+```{r drop length less than 0,echo=FALSE, warning=FALSE}
+tripcld7 <- filter(tripcld6, trip_duration > 0)
+```
+
+```{r dataset casual & member,echo=FALSE, warning=FALSE}
+tripcasual <- filter(tripcld7, member_casual == "casual")
+tripcasual <-subset(tripcasual, select=-c(member_casual, rideable_type, end_station_id, start_station_id, ride_id))
+tripmember <- filter(tripcld7, member_casual == "member")
+tripmember <- subset(tripmember, select=-c(member_casual, rideable_type, end_station_id, start_station_id, ride_id))
+```
+
+# Analyze - find out what's happening
+
+```{r mean & max & median of ride length,echo=FALSE, warning=FALSE}
+mean_max_median_all <- summarise(tripcld7, mean_ride = mean(trip_duration), max_ride_ = max(trip_duration), median_ride = median(trip_duration), min_ride = min(trip_duration))
+
+mean_max_median_member <- summarise(tripmember, mean_ride = mean(trip_duration), max_ride_ = max(trip_duration), median_ride = median(trip_duration), min_ride = min(trip_duration))
+
+mean_max_median_casual <- summarise(tripcasual, mean_ride = mean(trip_duration), max_ride_ = max(trip_duration), median_ride = median(trip_duration), min_ride = min(trip_duration))
+```
+
+```{r avg trip duration by weekday & membership,echo=FALSE, warning=FALSE}
+# need to: sum trip duration by weekday, so 2 aggregations => basic aggregate
+tripduagg <- aggregate(tripcld7$trip_duration ~ tripcld7$member_casual + tripcld7$weekday,FUN=mean) # %>% view()
+# works
+```
+
+```{r count trips per day,echo=FALSE, warning=FALSE}
+trippday <- count(tripcld7, weekday) #%>%  view
+# works
+# add member_casual for distinct between members&casuals
+```
+
+# Share - presentation / visuals
+
+```{r viz rides number per member,echo=FALSE, warning=FALSE}
+tripcld7 %>% 
+  group_by(member_casual, weekday) %>% 
+  summarise(number_of_rides = n() ,average_duration = mean(trip_duration)) %>% 
+  arrange(member_casual, weekday)  %>% 
+  ggplot(aes(x = weekday, y = number_of_rides, fill = member_casual)) + 
+  geom_col(position = "dodge")+ 
+  labs(x="Weekday", y="Number of Rides") + 
+  guides(fill=guide_legend(title="Member or Casual"))+ 
+  theme(axis.text.x = element_text(angle = 45,hjust=1))
+
+# ggsave("ride_per_member.png")
+```
+
+```{r viz ride duration per member, echo=FALSE, warning=FALSE}
+tripcld7 %>% 
+  group_by(member_casual, weekday) %>% 
+  summarise(number_of_rides = n() ,average_duration = mean(trip_duration)) %>% 
+  arrange(member_casual, weekday)  %>% 
+  ggplot(aes(x = weekday, y = average_duration, fill = member_casual)) + 
+  geom_col(position = "dodge") + 
+  labs(x="Weekday", y="Average Trip Duration by Second") + 
+  guides(fill=guide_legend(title="Member or Casual"))+ 
+  theme(axis.text.x = element_text(angle = 45,hjust=1))
+
+# ggsave("duration_per_member.png")
+```
+
+# Act - what to do
+
+It seems that members tend to take shorter trips than casual riders, but more in quantity. 
+This could be because members are more likely to use the bikes for commuting to work or school, while casual riders are more likely to use the bikes for leisure activities. 
+
+The highest average trip duration for members is on Wednesdays, which suggests that Wednesdays are the busiest days for members. 
+This could be because members are more likely to use the bikes for commuting to work or school on Wednesdays. 
+
+The highest average trip duration for casual riders is on Fridays, which suggests that Fridays are the busiest days for casual riders. 
+This could be because more people have free time on Fridays and are more likely to use the bikes for leisure activities.
+
+
+To convert more casual riders into members:
+
+Consider offering incentives to casual riders who use the bikes for commuting to work or school. 
+
+Promote the benefits of membership to casual users, such as access to more rides and discounts on equipment rentals.
+
+Or focus on marketing campaigns that target weekday riders, as this is where the biggest difference between members and casual users is seen.
+
+Or explore ways to encourage members to take longer rides, such as offering special rewards or discounts for longer trips.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

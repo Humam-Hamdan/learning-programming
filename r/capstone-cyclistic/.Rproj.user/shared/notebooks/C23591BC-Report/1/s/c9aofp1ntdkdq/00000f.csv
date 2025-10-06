@@ -1,0 +1,7 @@
+"0","# No duplicates
+dim(tripcld5[duplicated(tripcld5$ride_id),])[1]
+"
+"1","[1]"
+"1"," 0"
+"1","
+"
