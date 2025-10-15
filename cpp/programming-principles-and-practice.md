@@ -220,7 +220,141 @@ cout << "enter the number";
 
 ## Chapter 3: Computation
 
+- we are here interested in the `input -> Program [ code -> code -> code ] -> output`.
+- inputs into a part of a program are called arguments, and outputs are called results.
+- computation is the act -art- of producing results based on some inputs.
+- a programmer's job is to express computations:
+    1. correctly.
+    2. simply.
+    3. efficiently.
+- a program needs to be in its simplest form, since it will be transmuted with time.
+- the job becomes a responsibility when we decide to go pro with our coding.
+- concerns of structure and code quality will likely make debugging easier and less frustrating.
+- the main tool for organizing a program is to break a huge computation into many little one, and we have two techniques for that:
+    1. abstraction: the act of hiding details which we will not use behind a convenient general interface.
+    2. divide and conquer: splitting the program into manageable sizes.
+- we split the huge problems because we can forget where we were or how we came here if we work on the huge problem in one go.
+- concerns about structure lie at the heart of good software and ignoring it can get real expensive real quick.
+- building with no structure is like building with mud bricks, you will not get to the tenth floor, ever.
+- an expression computes a value from a number of operands.
+- if the result of an expression is nonsense but the expression itself is syntactically correct you will have nonsense which the compiler will not care about, since it does not know what you are trying to compute.
+- ugly code slows down reading and comprehension and often hides logical errors.
+- you can define constants using `constexpr <type> <var-name> = <value>;`.
+- avoid magical constants, neither you nor others will remember its meaning after three hours.
+- a `constexpr` must have a value at compile time, but if you want another way to define constants then use `const <type> <var-name> = <value>;`.
+> `f<T>(a)` is a function template call, which passes `a` to `f<T>` as an arg.
+> `[](a){S}` is a lambda expression, which creates a function object with `a` as an argument.
+> `T{a}` where `T` is a type widens `a`.
+> `a<b<c` means `(a<b)<c`, which means `(true | false)<c` which makes no sense, do not use that.
+- 'watch out for the error and hope your compiler warns' lol.
+- we can select with either `if` or `switch` statements.
+- the simplest form of selection is an if-statement, consider the following code:
+```cpp
+int a = 0;
+int b = 0;
+cout << "Please enter two ints";
+cin >> a >> b;
+if ( a < b )
+    cout << a << " is smaller than " << b << '\n';
+else
+    cout << a << " is larger than " << b << '\n';
+```
+- you can also do an else-if like this:
+```cpp
+if (cond)
+    code;
+else if (cond2)
+        code2;
+else
+    code3;
+```
+- you demonstrate your competence by writing the simplest correct program there is.
+- we can rewrite our three-way-if'ing into an elegant `switch` statement.
+- we can only switch on ints, chars, and enums.
+- the values in the case labels must be constant expressions.
+- you can not use the same value for two case labels.
+- you can use multi-case-labels for a single case.
+- never forget to end each case with a `break`.
+- iteration is the act of doing something more than one time.
+```cpp
+int main()
+{
+    int i = 0;
+    while ( i < 100 ){
+        cout << i << '\t' << square(i) << '\n';
+        ++i;
+    }
+}
+```
+- the while loop has a condition and a body.
+> char-iteration.cpp
+- we could have written the example like this:
+```cpp
+int main () 
+{
+    for ( int i = 0; i < 100; ++i){
+        cout << i << '\t' << square(i) << '\n';
+    }
+}
+```
+- a function is a named squence of statements and can return a value.
+- for the used `square` funciton above we can define:
+```cpp
+int square( int x ){
+    return x * x;
+}
+```
+- the compiler is designed such that the code once compiled will always give the same result, it is determenistic by design.
+- the parameter list can be empty, and we use `void` for functions that return nothing:
+```cpp
+void wirte_sorry(){
+    cout << "Sorry!\n";
+}
+```
+> sq-add.cpp
+- we can define a function:
+```cpp
+int square(int);
+double sqrt(double);
+```
+- as such, we can store our functions elsewhere and only focus on what we need to do.
+- a vector is cpp's version of a list, and we define it like this:
+```cpp
+vector <int> v = {5, 7, 4, 6, 8};
+```
+- we can only store one type of data in a vector with a specified type.
+- we can init a vector without data, so we have its size ready to be used.
+- a vector knows its size, so we can use:
+```cpp
+vector <int> v = {5, 7, 4, 6, 8};
+for ( int i = 0; i < v.size() ; ++i )
+    cout << v[i] << '\n';
+// OR
+for ( int x : v)
+    cout << x << '\n';
+```
+- the last example is called a range-for-loop.
+- we can add elements to a vector by using the `push_back()` function, i.e.:
+```cpp
+vector <double> v;
+v.push_back(6.5);
+v.push_back(2.7);
+```
+- we can make a vector which we do not know its size and would like to enter the data into it like this:
+```cpp
+vector <double> temps;
+for ( double temp; cin >> temp )
+     temps.push_back(temp);
+    // do something
+```
+> see vector-calcs.cpp
+- when iterating always remember the case of no elements.
+> simple-dict.cpp
 
+> DRILL
+
+- [ ] make a bleeping prog, which reads words and prints them out untill it sees a bad one which will be replaced.
+- [ ] add chf conversion to money-conversion-switch.cpp
 
 ## Chapter 4
 
