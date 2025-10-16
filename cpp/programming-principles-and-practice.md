@@ -351,7 +351,15 @@ for ( double temp; cin >> temp )
 - when iterating always remember the case of no elements.
 > simple-dict.cpp
 
-> DRILL
+### DRILL
+- while-terminator
+- compare-two-nums
+- compare-two-nums-2
+- length-converter
+
+### Review
+
+- 
 
 - [ ] make a bleeping prog, which reads words and prints them out untill it sees a bad one which will be replaced.
 - [ ] add chf conversion to money-conversion-switch.cpp
